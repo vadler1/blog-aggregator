@@ -4,11 +4,16 @@ import (
 	"fmt"
 	"os"
 
+	"database/sql"
+
+	_ "github.com/lib/pq"
 	"github.com/vadler1/gator/internal/config"
+	"github.com/vadler1/gator/internal/database"
 )
 
 type state struct {
-	config *config.Config
+	config  *config.Config
+	queries *database.Queries
 }
 
 func main() {
@@ -18,8 +23,18 @@ func main() {
 		os.Exit(1)
 	}
 
+	db, err := sql.Open("postgres", cfg.DBUrl)
+	if err != nil {
+		fmt.Println("Error connecting to database:", err)
+		os.Exit(1)
+	}
+	defer db.Close()
+
+	queries := database.New(db)
+
 	s := state{
-		config: cfg,
+		config:  cfg,
+		queries: queries,
 	}
 
 	cmds := commands{
@@ -27,6 +42,7 @@ func main() {
 	}
 
 	cmds.register("login", handlerLogin)
+	cmds.register("register", handlerRegister)
 
 	args := os.Args
 
