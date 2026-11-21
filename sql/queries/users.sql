@@ -10,3 +10,6 @@ WHERE name = $1;
 
 -- name: ClearUsers :exec
 DELETE FROM users;
+
+-- name: GetUsers :many
+SELECT * FROM users;

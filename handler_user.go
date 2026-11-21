@@ -79,3 +79,20 @@ func handlerReset(s *state, cmd command) error {
 	fmt.Println("Users cleared successfully")
 	return nil
 }
+
+func handlerUsers(s *state, cmd command) error {
+	users, err := s.queries.GetUsers(context.Background())
+	if err != nil {
+		return fmt.Errorf("Failed to get users: %w", err)
+	}
+
+	for _, user := range users {
+		suffix := ""
+		if user.Name == s.config.CurrentUserName {
+			suffix = " (current)"
+		}
+		fmt.Printf("%s%s\n", user.Name, suffix)
+	}
+
+	return nil
+}
