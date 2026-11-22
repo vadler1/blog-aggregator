@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"database/sql"
 	"fmt"
 	"time"
 
@@ -45,8 +44,8 @@ func handlerAddfeed(s *state, cmd command) error {
 
 	params := database.CreateFeedParams{
 		ID:        uuid.New(),
-		CreatedAt: sql.NullTime{Time: time.Now(), Valid: true},
-		UpdatedAt: sql.NullTime{Time: time.Now(), Valid: true},
+		CreatedAt: time.Now().UTC(),
+		UpdatedAt: time.Now().UTC(),
 		Name:      name,
 		Url:       url,
 		UserID:    user.ID,
@@ -57,7 +56,19 @@ func handlerAddfeed(s *state, cmd command) error {
 		return fmt.Errorf("Failed to create feed: %w", err)
 	}
 
-	fmt.Printf("%+v\n", feed)
+	fmt.Println("Feed created successfully:")
+	printFeed(feed)
+	fmt.Println()
+	fmt.Println("=====================================")
 
 	return nil
+}
+
+func printFeed(feed database.Feed) {
+	fmt.Printf("* ID:            %s\n", feed.ID)
+	fmt.Printf("* Created:       %v\n", feed.CreatedAt)
+	fmt.Printf("* Updated:       %v\n", feed.UpdatedAt)
+	fmt.Printf("* Name:          %s\n", feed.Name)
+	fmt.Printf("* URL:           %s\n", feed.Url)
+	fmt.Printf("* UserID:        %s\n", feed.UserID)
 }

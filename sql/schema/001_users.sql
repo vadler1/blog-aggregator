@@ -1,11 +1,9 @@
 -- +goose Up
 CREATE TABLE users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-    created_at TIMESTAMP DEFAULT now(),
-    updated_at TIMESTAMP DEFAULT now(),
-    name TEXT NOT NULL,
-
-    UNIQUE (name)
+    created_at TIMESTAMP DEFAULT now() NOT NULL,
+    updated_at TIMESTAMP DEFAULT now() NOT NULL,
+    name TEXT NOT NULL UNIQUE
 );
 
 -- +goose Down
