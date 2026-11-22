@@ -37,7 +37,7 @@ func handlerAddfeed(s *state, cmd command) error {
 
 	currentUserName := s.config.CurrentUserName
 
-	user, err := s.queries.GetUser(context.Background(), currentUserName)
+	user, err := s.queries.GetUserByName(context.Background(), currentUserName)
 	if err != nil {
 		return fmt.Errorf("Failed to get current user: %w", err)
 	}
@@ -60,6 +60,28 @@ func handlerAddfeed(s *state, cmd command) error {
 	printFeed(feed)
 	fmt.Println()
 	fmt.Println("=====================================")
+
+	return nil
+}
+
+func handlerFeeds(s *state, cmd command) error {
+	feeds, err := s.queries.GetFeeds(context.Background())
+	if err != nil {
+		return fmt.Errorf("Failed to get feeds: %w", err)
+	}
+
+	for _, feed := range feeds {
+
+		fmt.Printf("* Name:          %s\n", feed.Name)
+		fmt.Printf("* URL:           %s\n", feed.Url)
+		user, err := s.queries.GetUserById(context.Background(), feed.UserID)
+		if err != nil {
+			return fmt.Errorf("Failed to get user by ID: %w", err)
+		}
+
+		fmt.Printf("* UserName:      %s\n", user.Name)
+		fmt.Println()
+	}
 
 	return nil
 }

@@ -16,7 +16,7 @@ func handlerLogin(s *state, cmd command) error {
 
 	username := cmd.args[0]
 
-	user, err := s.queries.GetUser(context.Background(), username)
+	user, err := s.queries.GetUserByName(context.Background(), username)
 
 	if err != nil {
 		return fmt.Errorf("Failed to get user: %w", err)
