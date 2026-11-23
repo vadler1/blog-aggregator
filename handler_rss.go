@@ -64,7 +64,7 @@ func handlerAddfeed(s *state, cmd command) error {
 		FeedID:    feed.ID,
 	}
 
-	_, err = s.queries.CreateFeedFollow(context.Background(), followFeedParams)
+	feedFollow, err := s.queries.CreateFeedFollow(context.Background(), followFeedParams)
 	if err != nil {
 		return fmt.Errorf("Failed to create feed follow: %w", err)
 	}
@@ -72,6 +72,8 @@ func handlerAddfeed(s *state, cmd command) error {
 	fmt.Println("Feed created successfully:")
 	printFeed(feed)
 	fmt.Println()
+	fmt.Println("Feed followed successfully:")
+	printFeedFollow(feedFollow.UserName, feedFollow.FeedName)
 	fmt.Println("=====================================")
 
 	return nil
@@ -108,13 +110,7 @@ func handlerFollow(s *state, cmd command) error {
 	}
 
 	fmt.Println("Feed follow created successfully:")
-	fmt.Printf("* ID:            %s\n", feedFollow.ID)
-	fmt.Printf("* Created:       %v\n", feedFollow.CreatedAt)
-	fmt.Printf("* Updated:       %v\n", feedFollow.UpdatedAt)
-	fmt.Printf("* UserID:        %s\n", feedFollow.UserID)
-	fmt.Printf("* UserName:      %s\n", feedFollow.UserName)
-	fmt.Printf("* FeedId:        %s\n", feedFollow.FeedID)
-	fmt.Printf("* FeedName:      %s\n", feedFollow.FeedName)
+	printFeedFollow(feedFollow.UserName, feedFollow.FeedName)
 
 	return nil
 }
@@ -135,7 +131,12 @@ func handlerFollowing(s *state, cmd command) error {
 		return fmt.Errorf("Failed to retrieve followed feeds for user: %w", err)
 	}
 
-	fmt.Printf("Following these feeds:\n")
+	if len(followed_feeds) == 0 {
+		fmt.Println("No feed follows found for this user.")
+		return nil
+	}
+
+	fmt.Printf("Feed follows for user %s:\n", user.Name)
 	for _, followed_feed := range followed_feeds {
 		fmt.Printf("* %s\n", followed_feed.FeedName)
 	}
@@ -172,4 +173,9 @@ func printFeed(feed database.Feed) {
 	fmt.Printf("* Name:          %s\n", feed.Name)
 	fmt.Printf("* URL:           %s\n", feed.Url)
 	fmt.Printf("* UserID:        %s\n", feed.UserID)
+}
+
+func printFeedFollow(username, feedname string) {
+	fmt.Printf("* User:          %s\n", username)
+	fmt.Printf("* Feed:          %s\n", feedname)
 }
